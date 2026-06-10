@@ -1,6 +1,6 @@
 ### rota de login
 
-POST http://localhost:3000/auth/signin
+POST http://localhost:3002/auth/signin
 Content-Type: application/json
 
 {
