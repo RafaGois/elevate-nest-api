@@ -1,0 +1,65 @@
+---
+description: Exige testes unitários e e2e ao adicionar funcionalidades na API NestJS
+alwaysApply: true
+---
+
+# Testes obrigatórios por feature
+
+Ao implementar qualquer funcionalidade na API, incluir testes que validem o comportamento antes de considerar a feat concluída.
+
+## Dois níveis de teste
+
+| Tipo | Onde | Comando | Quando usar |
+|------|------|---------|-------------|
+| Unitário | `src/**/*.spec.ts` | `npm test` | Sempre — CI em todo PR |
+| Integrado (e2e) | `test/**/*.e2e-spec.ts` | `npm run test:e2e` | Fluxos críticos ponta a ponta |
+
+## Unitários (`*.spec.ts`)
+
+Colocar ao lado do arquivo testado (`user.service.ts` → `user.service.spec.ts`).
+
+Cobrir:
+- Regras de negócio (sucesso e falha)
+- Mensagens de erro (`UnauthorizedException`, etc.)
+- Edge cases e validações
+
+Padrão:
+- Mockar dependências (`UserService`, `JwtService`, repositórios)
+- Usar `Test.createTestingModule`
+- Para controllers com guards: `.overrideGuard(Guard).useValue({ canActivate: () => true })`
+
+```typescript
+// ✅ auth.service.spec.ts — lógica isolada com mocks
+userService.findByEmail.mockResolvedValue(null);
+await expect(service.signup(data)).resolves.toEqual(createdUser);
+```
+
+## Integrados (`test/*.e2e-spec.ts`)
+
+Cobrir fluxos HTTP completos com banco real:
+- Request → pipe → controller → service → repository → response
+- Usar `supertest` + helpers em `test/helpers/`
+
+Padrão do projeto:
+- `createTestApp()` — sobe `AppModule` com o mesmo `ValidationPipe` do `main.ts`
+- `cleanDatabase(app)` — limpa dados entre testes
+- `closeTestApp(app)` — desconecta Prisma no teardown
+
+```typescript
+// ✅ test/auth.e2e-spec.ts — fluxo completo
+await request(app.getHttpServer())
+  .post('/auth/signin')
+  .send(credentials)
+  .expect(201);
+```
+
+## Checklist por feature
+
+1. Implementar a funcionalidade (controller, service, guard, etc.)
+2. Criar/atualizar `src/<modulo>/*.spec.ts` com casos de sucesso, erro e edge cases
+3. Se for fluxo crítico (auth, pagamento, CRUD principal), criar/atualizar `test/<modulo>.e2e-spec.ts`
+4. Rodar `npm test` e, se aplicável, `npm run test:e2e`
+
+## Referência
+
+Auth: `src/auth/*.spec.ts` (unitários) + `test/auth.e2e-spec.ts` (integrado).
