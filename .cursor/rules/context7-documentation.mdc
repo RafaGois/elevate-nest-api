@@ -1,0 +1,40 @@
+---
+description: Use Context7 MCP for stack/library documentation lookups
+alwaysApply: true
+---
+
+# Documentation via Context7
+
+When a prompt involves **documentation, API reference, setup, configuration, or how-to** for any library, framework, or stack (NestJS, Prisma, React, etc.), **always use Context7** instead of relying on training data or generic web search.
+
+## When to activate
+
+- "How do I configure X in Nest?"
+- "What's the API for Y?"
+- "Show me the official way to do Z with Prisma/JWT/Express..."
+- Implementing or reviewing code that depends on external library behavior
+- Comparing approaches against official docs
+
+## Workflow (Context7 MCP)
+
+1. **`resolve-library-id`** — pass `libraryName` (official name) and `query` (user's full question)
+2. Pick the best match (exact name, high benchmark score, version if specified)
+3. **`query-docs`** — pass `libraryId` and the specific question
+4. Answer using the fetched docs; cite version when relevant
+
+```typescript
+// ❌ BAD — answer from memory when docs may have changed
+"Nest JWT global module works like this..."
+
+// ✅ GOOD — resolve + query Context7 first, then answer
+resolve-library-id({ libraryName: "NestJS JWT", query: "..." })
+query-docs({ libraryId: "/nestjs/jwt", query: "..." })
+```
+
+## Rules
+
+- Do **not** skip Context7 for stack questions even if the answer seems obvious
+- Prefer **official** library IDs over community forks
+- Include **version** in resolution when the user mentions one (e.g. "Nest 11")
+- Limit to **3 calls per tool** per question (Context7 guideline)
+- Use fetched examples in code suggestions; align with project conventions

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
@@ -22,7 +23,10 @@ describe('UserController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [{ provide: UserService, useValue: userService }],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
     controller = module.get<UserController>(UserController);
   });
