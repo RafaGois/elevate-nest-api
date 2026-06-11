@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { SignUpDTO } from 'src/auth/dtos/auth';
 import { hash } from 'bcrypt';
+import { UserDTO } from './dtos/user';
 
 @Injectable()
 export class UserService {
@@ -20,19 +21,19 @@ export class UserService {
     });
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<UserDTO | null> {
     return await this.userRepository.findByEmail(email);
   }
 
-  async findAll() {
+  async findAll(): Promise<UserDTO[]> {
     return await this.userRepository.findAll();
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<UserDTO | null> {
     return await this.userRepository.findById(id);
   }
 
-  async update(id: string, data: SignUpDTO) {
+  async update(id: string, data: SignUpDTO): Promise<UserDTO> {
     const existingUser = await this.findById(id);
     if (!existingUser) {
       throw new UnauthorizedException('Usuário não encontrado');
@@ -45,7 +46,7 @@ export class UserService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<UserDTO> {
     return await this.userRepository.remove(id);
   }
 }

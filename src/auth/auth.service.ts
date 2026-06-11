@@ -25,6 +25,7 @@ export class AuthService {
     if (!existingUser) {
       throw new UnauthorizedException('Usuário não encontrado');
     }
+
     const isPasswordValid = await compare(data.password, existingUser.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Senha incorreta');
