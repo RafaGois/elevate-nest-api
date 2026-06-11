@@ -1,36 +1,27 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { SignInDTO, SignUpDTO } from './dtos/auth';
-import { PrismaService } from '../prisma/prisma.service';
-import { compare, hash } from 'bcrypt';
+import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private prismaService: PrismaService,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
   async signup(data: SignUpDTO) {
-    const existingUser = await this.prismaService.user.findFirst({
-      where: { email: data.email },
-    });
+    const existingUser = await this.userService.findByEmail(data.email);
     if (existingUser) {
       throw new UnauthorizedException('Usuário já existe');
     }
 
-    const hashedPassword = await hash(data.password, 10);
-
-    await this.prismaService.user.create({
-      data: { ...data, password: hashedPassword },
-    });
-    return data;
+    return await this.userService.create(data);
   }
 
   async signin(data: SignInDTO): Promise<SignInDTO & { token: string }> {
-    const existingUser = await this.prismaService.user.findFirst({
-      where: { email: data.email },
-    });
+    const existingUser = await this.userService.findByEmail(data.email);
     if (!existingUser) {
       throw new UnauthorizedException('Usuário não encontrado');
     }
