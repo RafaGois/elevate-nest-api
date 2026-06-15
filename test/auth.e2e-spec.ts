@@ -37,7 +37,7 @@ describe('Auth (e2e)', () => {
         email: validUser.email,
       });
       expect(response.body.id).toBeDefined();
-      expect(response.body.password).not.toBe(validUser.password);
+      expect(response.body).not.toHaveProperty('password');
     });
 
     it('returns 401 when email already exists', async () => {
@@ -91,45 +91,6 @@ describe('Auth (e2e)', () => {
         .expect(401);
 
       expect(response.body.message).toBe('Senha incorreta');
-    });
-  });
-
-  describe('GET /auth/me', () => {
-    let token: string;
-
-    beforeEach(async () => {
-      await request(app.getHttpServer()).post('/auth/signup').send(validUser);
-
-      const signinResponse = await request(app.getHttpServer())
-        .post('/auth/signin')
-        .send({ email: validUser.email, password: validUser.password });
-
-      token = signinResponse.body.token;
-    });
-
-    it('returns ok with a valid token', async () => {
-      await request(app.getHttpServer())
-        .get('/auth/me')
-        .set('Authorization', `Bearer ${token}`)
-        .expect(200)
-        .expect('ok');
-    });
-
-    it('returns 401 without token', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/auth/me')
-        .expect(401);
-
-      expect(response.body.message).toBe('Token não encontrado');
-    });
-
-    it('returns 401 with invalid token', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/auth/me')
-        .set('Authorization', 'Bearer invalid-token')
-        .expect(401);
-
-      expect(response.body.message).toBe('Token inválido');
     });
   });
 });

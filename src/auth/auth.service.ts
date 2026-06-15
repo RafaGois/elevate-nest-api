@@ -17,7 +17,11 @@ export class AuthService {
       throw new UnauthorizedException('Usuário já existe');
     }
 
-    return await this.userService.create(data);
+    return await this.userService.create({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    });
   }
 
   async signin(data: SignInDTO): Promise<SignInDTO & { token: string }> {

@@ -7,11 +7,12 @@ describe('UserController', () => {
   let controller: UserController;
   let userService: jest.Mocked<Pick<UserService, 'findAll' | 'findById'>>;
 
-  const storedUser = {
+  const storedUserResponse = {
     id: 'user-id',
     name: 'Test User',
     email: 'test@example.com',
-    password: 'hashed-password',
+    createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    updatedAt: new Date('2026-01-01T00:00:00.000Z'),
   };
 
   beforeEach(async () => {
@@ -33,21 +34,21 @@ describe('UserController', () => {
 
   describe('findAll', () => {
     it('delegates to UserService.findAll', async () => {
-      userService.findAll.mockResolvedValue([storedUser] as never);
+      userService.findAll.mockResolvedValue([storedUserResponse] as never);
 
-      await expect(controller.findAll()).resolves.toEqual([storedUser]);
+      await expect(controller.findAll()).resolves.toEqual([storedUserResponse]);
       expect(userService.findAll).toHaveBeenCalled();
     });
   });
 
   describe('findById', () => {
     it('delegates to UserService.findById', async () => {
-      userService.findById.mockResolvedValue(storedUser as never);
+      userService.findById.mockResolvedValue(storedUserResponse as never);
 
-      await expect(controller.findById(storedUser.id)).resolves.toEqual(
-        storedUser,
+      await expect(controller.findById(storedUserResponse.id)).resolves.toEqual(
+        storedUserResponse,
       );
-      expect(userService.findById).toHaveBeenCalledWith(storedUser.id);
+      expect(userService.findById).toHaveBeenCalledWith(storedUserResponse.id);
     });
   });
 });

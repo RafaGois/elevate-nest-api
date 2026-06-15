@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { hash } from 'bcrypt';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
+import { toUserResponse } from './user.mapper';
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn(),
@@ -28,7 +29,11 @@ describe('UserService', () => {
     name: userData.name,
     email: userData.email,
     password: 'hashed-password',
+    createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    updatedAt: new Date('2026-01-01T00:00:00.000Z'),
   };
+
+  const storedUserResponse = toUserResponse(storedUser);
 
   beforeEach(async () => {
     userRepository = {
@@ -57,11 +62,12 @@ describe('UserService', () => {
       (hash as jest.Mock).mockResolvedValue('hashed-password');
       userRepository.create.mockResolvedValue(storedUser as never);
 
-      await expect(service.create(userData)).resolves.toEqual(storedUser);
+      await expect(service.create(userData)).resolves.toEqual(storedUserResponse);
 
       expect(hash).toHaveBeenCalledWith(userData.password, 10);
       expect(userRepository.create).toHaveBeenCalledWith({
-        ...userData,
+        name: userData.name,
+        email: userData.email,
         password: 'hashed-password',
       });
     });
@@ -88,20 +94,20 @@ describe('UserService', () => {
   });
 
   describe('findAll', () => {
-    it('delegates to repository', async () => {
+    it('returns users without password', async () => {
       userRepository.findAll.mockResolvedValue([storedUser] as never);
 
-      await expect(service.findAll()).resolves.toEqual([storedUser]);
+      await expect(service.findAll()).resolves.toEqual([storedUserResponse]);
       expect(userRepository.findAll).toHaveBeenCalled();
     });
   });
 
   describe('findById', () => {
-    it('delegates to repository', async () => {
+    it('returns user without password', async () => {
       userRepository.findById.mockResolvedValue(storedUser as never);
 
       await expect(service.findById(storedUser.id)).resolves.toEqual(
-        storedUser,
+        storedUserResponse,
       );
       expect(userRepository.findById).toHaveBeenCalledWith(storedUser.id);
     });
@@ -116,12 +122,13 @@ describe('UserService', () => {
       userRepository.update.mockResolvedValue(updatedUser as never);
 
       await expect(service.update(storedUser.id, userData)).resolves.toEqual(
-        updatedUser,
+        toUserResponse(updatedUser),
       );
 
       expect(hash).toHaveBeenCalledWith(userData.password, 10);
       expect(userRepository.update).toHaveBeenCalledWith(storedUser.id, {
-        ...userData,
+        name: userData.name,
+        email: userData.email,
         password: 'new-hashed-password',
       });
     });
@@ -137,10 +144,12 @@ describe('UserService', () => {
   });
 
   describe('remove', () => {
-    it('delegates to repository', async () => {
+    it('returns user without password', async () => {
       userRepository.remove.mockResolvedValue(storedUser as never);
 
-      await expect(service.remove(storedUser.id)).resolves.toEqual(storedUser);
+      await expect(service.remove(storedUser.id)).resolves.toEqual(
+        storedUserResponse,
+      );
       expect(userRepository.remove).toHaveBeenCalledWith(storedUser.id);
     });
   });

@@ -6,6 +6,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { UserModule } from './user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { constants } from './auth/constants';
+import { EnvConfigModule } from './shared/infrastructure/env-config/env-config.module';
 @Module({
   imports: [
     AuthModule,
@@ -15,6 +16,7 @@ import { constants } from './auth/constants';
       secret: constants.secret,
       signOptions: { expiresIn: '60s' },
     }),
+    EnvConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

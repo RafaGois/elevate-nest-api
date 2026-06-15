@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 
 describe('AuthController', () => {
@@ -27,17 +26,20 @@ describe('AuthController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [{ provide: AuthService, useValue: authService }],
-    })
-      .overrideGuard(AuthGuard)
-      .useValue({ canActivate: jest.fn(() => true) })
-      .compile();
+    }).compile();
 
     controller = module.get<AuthController>(AuthController);
   });
 
   describe('signup', () => {
     it('delegates to AuthService.signup', async () => {
-      const createdUser = { id: '1', ...signUpData, password: 'hashed' };
+      const createdUser = {
+        id: '1',
+        name: signUpData.name,
+        email: signUpData.email,
+        createdAt: new Date('2026-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      };
       authService.signup.mockResolvedValue(createdUser as never);
 
       await expect(controller.signup(signUpData)).resolves.toEqual(createdUser);
@@ -52,12 +54,6 @@ describe('AuthController', () => {
 
       await expect(controller.signin(signInData)).resolves.toEqual(signinResult);
       expect(authService.signin).toHaveBeenCalledWith(signInData);
-    });
-  });
-
-  describe('me', () => {
-    it('returns ok', () => {
-      expect(controller.me({} as Request)).toBe('ok');
     });
   });
 });

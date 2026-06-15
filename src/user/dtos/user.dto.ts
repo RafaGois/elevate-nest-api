@@ -35,6 +35,29 @@ export class UserDTO {
   updatedAt: Date;
 }
 
+export class UserResponseDTO {
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  name: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsDate()
+  @IsNotEmpty()
+  createdAt: Date;
+
+  @IsDate()
+  @IsNotEmpty()
+  updatedAt: Date;
+}
+
 export class CreateUserDTO {
   @IsString()
   @IsNotEmpty()
