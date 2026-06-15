@@ -16,7 +16,7 @@ import { EnvConfigModule } from './shared/infrastructure/env-config/env-config.m
       secret: constants.secret,
       signOptions: { expiresIn: '60s' },
     }),
-    EnvConfigModule,
+    EnvConfigModule.forRoot({}),
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
