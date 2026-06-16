@@ -2,12 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { UserResponseShape } from './user.types';
 
 describe('UserController', () => {
   let controller: UserController;
   let userService: jest.Mocked<Pick<UserService, 'findAll' | 'findById'>>;
 
-  const storedUserResponse = {
+  const storedUserResponse: UserResponseShape = {
     id: 'user-id',
     name: 'Test User',
     email: 'test@example.com',
@@ -34,7 +35,7 @@ describe('UserController', () => {
 
   describe('findAll', () => {
     it('delegates to UserService.findAll', async () => {
-      userService.findAll.mockResolvedValue([storedUserResponse] as never);
+      userService.findAll.mockResolvedValue([storedUserResponse]);
 
       await expect(controller.findAll()).resolves.toEqual([storedUserResponse]);
       expect(userService.findAll).toHaveBeenCalled();
@@ -43,7 +44,7 @@ describe('UserController', () => {
 
   describe('findById', () => {
     it('delegates to UserService.findById', async () => {
-      userService.findById.mockResolvedValue(storedUserResponse as never);
+      userService.findById.mockResolvedValue(storedUserResponse);
 
       await expect(controller.findById(storedUserResponse.id)).resolves.toEqual(
         storedUserResponse,

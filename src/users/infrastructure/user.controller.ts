@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UpdateUserDTO, UserResponseDTO } from './dtos/user.dto';
+import { UpdateUserDTO, UserResponseDTO } from './dto/user.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
@@ -23,7 +23,7 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<UserResponseDTO | null> {
+  async findById(@Param('id') id: string): Promise<UserResponseDTO> {
     return await this.userService.findById(id);
   }
 

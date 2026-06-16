@@ -6,6 +6,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { UserResponseShape } from '../user.types';
 
 export class UserDTO {
   @IsString()
@@ -35,7 +36,7 @@ export class UserDTO {
   updatedAt: Date;
 }
 
-export class UserResponseDTO {
+export class UserResponseDTO implements UserResponseShape {
   @IsString()
   @IsNotEmpty()
   id: string;
