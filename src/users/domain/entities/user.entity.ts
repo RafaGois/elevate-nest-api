@@ -1,10 +1,15 @@
+export type UserEntityProps = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
 export class UserEntity {
-  constructor(
-    public readonly id: string,
-    public readonly name: string,
-    public readonly email: string,
-    public readonly password: string,
-    public readonly createdAt: Date,
-    public readonly updatedAt: Date,
-  ) {}
+  constructor(public readonly props: UserEntityProps) {
+    this.props.createdAt = this.props.createdAt ?? new Date();
+    this.props.updatedAt = this.props.updatedAt ?? new Date();
+  }
 }
