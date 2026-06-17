@@ -30,7 +30,7 @@ export class UserEntity extends Entity<UserEntityProps> {
   }
 
   get name(): string {
-    return this.name;
+    return this.props.name;
   }
 
   private set name(value: string) {

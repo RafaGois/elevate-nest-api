@@ -27,6 +27,12 @@ describe('UserEntity', () => {
     expect(sut.name).toBe(props.name);
   });
 
+  it('setter of name field', () => {
+    sut['name'] = 'updated name';
+    expect(sut.name).toBe('updated name');
+    expect(typeof sut['name']).toBe('string');
+  });
+
   it('getter of email field', () => {
     expect(sut.email).toBeDefined();
     expect(typeof sut.email).toBe('string');
@@ -41,6 +47,12 @@ describe('UserEntity', () => {
     expect(sut.password).toBe(props.password);
   });
 
+  it('setter of password field', () => {
+    sut['password'] = 'updated password';
+    expect(sut.password).toBe('updated password');
+    expect(typeof sut['password']).toBe('string');
+  });
+
   it('getter of createdAt field', () => {
     expect(sut.createdAt).toBeDefined();
     expect(sut.createdAt).toBeInstanceOf(Date);
@@ -51,5 +63,15 @@ describe('UserEntity', () => {
     expect(sut.updatedAt).toBeDefined();
     expect(sut.updatedAt).toBeInstanceOf(Date);
     expect(sut.updatedAt).toBe(props.updatedAt);
+  });
+
+  it('Should update a user', () => {
+    sut.update({
+      name: 'updated name',
+      email: 'updated email',
+    });
+    expect(sut.name).toBe('updated name');
+    expect(sut.email).toBe('updated email');
+    expect(sut.updatedAt).toBeInstanceOf(Date);
   });
 });
